@@ -1,8 +1,8 @@
 from flask_wtf import FlaskForm
 from wtforms import URLField, SubmitField
-from wtforms.validators import DataRequired, Length, Optional, URL
+from wtforms.validators import DataRequired, Length, Optional, URL, Regexp
 
-from settings import MAX_LENGTH_URL, MAX_LENGTH_SHORT_URL
+from settings import MAX_LENGTH_URL, MAX_LENGTH_SHORT_URL, REGEX_SHORT_URL
 
 
 MESSAGE_REQUIRED = 'Обязательное поле'
@@ -25,6 +25,9 @@ class UrlForm(FlaskForm):
         'Ваш вариант короткой ссылки',
         validators=(
             Optional(),
+            Regexp(
+                REGEX_SHORT_URL,
+                message='Допускается использование латинских букв и цифр'),
             Length(
                 1, MAX_LENGTH_SHORT_URL,
                 message=(
