@@ -1,7 +1,7 @@
 from flask import abort, flash, redirect, render_template, url_for
 
 from . import app, db
-from yacut.forms import OpinionForm
+from yacut.forms import UrlForm
 from yacut.models import URLMap
 from yacut.utils import get_unique_short_id
 
