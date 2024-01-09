@@ -20,5 +20,6 @@ class URLMap(db.Model):
                 'redirect_url_view', short=self.short, _external=True))
 
     def from_dict(self, data):
-        setattr(self, 'original', data['url'])
-        setattr(self, 'short', data['custom_id'])
+        for field in ['original', 'short']:
+            if field in data:
+                setattr(self, field, data[field])
