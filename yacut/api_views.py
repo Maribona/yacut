@@ -7,6 +7,9 @@ from yacut.utils import get_unique_short_id
 from yacut.error_handlers import InvalidAPIUsage
 
 
+ERROR_NOTFOUND_ID = 'Указанная ссылка не найдена'
+
+
 @app.route('/api/id/', methods=('POST',))
 def create_short_url():
     pass
@@ -18,4 +21,4 @@ def get_original_url(short_id):
     if original_url is not None:
         data = original_url.to_dict()
         return jsonify({'url': data['url']}), status.OK
-    raise InvalidAPIUsage('Указанный id не найден', status.NOT_FOUND)
+    raise InvalidAPIUsage(ERROR_NOTFOUND_ID, status.NOT_FOUND)
