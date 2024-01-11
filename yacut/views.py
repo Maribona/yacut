@@ -14,21 +14,21 @@ def main_view():
     form = UrlForm()
     if form.validate_on_submit():
         custom_id = form.custom_id.data
+        original_link = form.original_link.data
         if URLMap.query.filter_by(short=custom_id).first():
             flash(EXISTING_SHORT_LINK)
             return render_template('yacut.html', form=form)
-        if not custom_id:
-            custom_id = get_unique_short_id()
-        short_url = URLMap(
-            original=form.original_link.data,
-            short=custom_id
+        short_url = custom_id or get_unique_short_id()
+        new_url = URLMap(
+            original=original_link,
+            short=short_url
         )
-        db.session.add(short_url)
+        db.session.add(new_url)
         db.session.commit()
         return render_template(
             'yacut.html',
             form=form,
-            short_link=short_url.short
+            short_link=new_url.short
         )
     return render_template('yacut.html', form=form)
 
