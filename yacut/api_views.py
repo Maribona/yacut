@@ -1,4 +1,5 @@
 from http import HTTPStatus as status
+import re
 from flask import jsonify, request
 from . import app, db
 
@@ -6,8 +7,9 @@ from yacut.models import URLMap
 from yacut.utils import get_unique_short_id
 from yacut.error_handlers import InvalidAPIUsage
 
+from settings import MAX_LENGTH_SHORT_URL, REGEX_SHORT_URL
 
-ERROR_NOTFOUND_ID = 'Указанная ссылка не найдена'
+ERROR_NOTFOUND_ID = 'Указанный id не найден'
 ERROR_MISSING_FIELDS = 'В запросе отсутствует обязательное поле'
 
 
@@ -15,12 +17,19 @@ ERROR_MISSING_FIELDS = 'В запросе отсутствует обязате�
 def create_short_url():
     data = request.get_json()
     if not data:
-        raise InvalidAPIUsage(ERROR_MISSING_FIELDS)
+        raise InvalidAPIUsage('Отсутствует тело запроса')
     if 'url' not in data:
-        raise InvalidAPIUsage(ERROR_MISSING_FIELDS)
-    if not data.get('custom_id'):
-        data['custom_id'] = get_unique_short_id()
-        raise InvalidAPIUsage('Данный вариант ссылки уже используется')
+        raise InvalidAPIUsage('"url" является обязательным полем!')
+
+    custom_id = data.get('custom_id')
+    if not custom_id:
+        custom_id = get_unique_short_id()
+    elif URLMap.query.filter_by(short=custom_id).first() is not None:
+        raise InvalidAPIUsage(f'Имя "{custom_id}" уже занято.')
+    elif re.match(REGEX_SHORT_URL, custom_id) is None \
+            or len(custom_id) > MAX_LENGTH_SHORT_URL:
+        raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
+
     new_url = URLMap()
     new_url.from_dict(data)
     db.session.add(new_url)
