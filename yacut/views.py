@@ -1,4 +1,4 @@
-from flask import flash, redirect, render_template
+from flask import flash, redirect, render_template, Response
 
 from . import app, db
 from yacut.forms import UrlForm
@@ -8,7 +8,7 @@ from settings import EXISTING_SHORT_LINK
 
 
 @app.route('/', methods=('GET', 'POST'))
-def main_view():
+def main_view() -> Response:
     form = UrlForm()
     if form.validate_on_submit():
         custom_id = form.custom_id.data
@@ -32,6 +32,6 @@ def main_view():
 
 
 @app.route('/<string:short_id>', methods=('GET',))
-def redirect_url_view(short_id):
+def redirect_url_view(short_id: str) -> Response:
     redirect_url = URLMap.query.filter_by(short=short_id).first_or_404()
     return redirect(redirect_url.original)
