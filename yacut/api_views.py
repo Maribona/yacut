@@ -18,20 +18,23 @@ def create_short_url():
     data = request.get_json()
     if not data:
         raise InvalidAPIUsage('Отсутствует тело запроса')
-    if 'url' not in data:
+    if not data.get('url'):
         raise InvalidAPIUsage('"url" является обязательным полем!')
 
     custom_id = data.get('custom_id')
-    if not custom_id:
+    if not custom_id or custom_id.strip() == '':
         custom_id = get_unique_short_id()
     elif URLMap.query.filter_by(short=custom_id).first() is not None:
-        raise InvalidAPIUsage(f'Имя "{custom_id}" уже занято.')
+        raise InvalidAPIUsage(
+            'Предложенный вариант короткой ссылки уже существует.')
     elif re.match(REGEX_SHORT_URL, custom_id) is None \
             or len(custom_id) > MAX_LENGTH_SHORT_URL:
-        raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
+        raise InvalidAPIUsage(
+            'Указано недопустимое имя для короткой ссылки')
 
     new_url = URLMap()
     new_url.from_dict(data)
+    new_url.short = custom_id
     db.session.add(new_url)
     db.session.commit()
     return jsonify(new_url.to_dict()), status.CREATED
@@ -41,6 +44,5 @@ def create_short_url():
 def get_original_url(short_id):
     original_url = URLMap.query.filter_by(short=short_id).first()
     if original_url is not None:
-        data = original_url.to_dict()
-        return jsonify({'url': data['url']}), status.OK
+        return jsonify({'url': original_url.original}), status.OK
     raise InvalidAPIUsage(ERROR_NOTFOUND_ID, status.NOT_FOUND)
