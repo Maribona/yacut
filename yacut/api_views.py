@@ -1,6 +1,9 @@
 from http import HTTPStatus as status
 import re
 from flask import jsonify, request
+from typing import Dict, Union
+
+
 from . import app, db
 
 from yacut.models import URLMap
@@ -15,7 +18,7 @@ ERROR_MISSING_FIELDS = 'В запросе отсутствует обязате�
 
 
 @app.route('/api/id/', methods=('POST',))
-def create_short_url():
+def create_short_url() -> Dict[str, Union[str, int]]:
     data = request.get_json()
     if not data:
         raise InvalidAPIUsage('Отсутствует тело запроса')
@@ -43,8 +46,8 @@ def create_short_url():
         ), status.CREATED)
 
 
-@app.route('/api/id/<short_id>/', methods=('GET',))
-def get_original_url(short_id):
+@app.route('/api/id/<string:short_id>/', methods=('GET',))
+def get_original_url(short_id) -> Dict[str, str]:
     original_url = URLMap.query.filter_by(short=short_id).first()
     if original_url is not None:
         return jsonify({'url': original_url.original}), status.OK
