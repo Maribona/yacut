@@ -4,9 +4,7 @@ from . import app, db
 from yacut.forms import UrlForm
 from yacut.models import URLMap
 from yacut.utils import get_unique_short_id
-
-
-EXISTING_SHORT_LINK = 'Предложенный вариант короткой ссылки уже существует.'
+from settings import EXISTING_SHORT_LINK
 
 
 @app.route('/', methods=('GET', 'POST'))
