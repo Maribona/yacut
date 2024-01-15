@@ -23,3 +23,8 @@ class URLMap(db.Model):
         for field in ['original', 'short']:
             if field in data:
                 setattr(self, field, data[field])
+
+    def add_to_db(self, **kwargs):
+        db.session.add(self)
+        db.session.commit()
+        return self
