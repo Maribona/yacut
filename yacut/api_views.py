@@ -1,17 +1,15 @@
-from http import HTTPStatus as status
 import re
-from flask import jsonify, request
+from http import HTTPStatus as status
 from typing import Dict, Union
+from urllib.parse import urljoin
 
+from flask import jsonify, request
+from settings import EXISTING_SHORT_LINK, MAX_LENGTH_SHORT_URL, REGEX_SHORT_URL
 
-from . import app, db
-
+from yacut import app, db
+from yacut.error_handlers import InvalidAPIUsage
 from yacut.models import URLMap
 from yacut.utils import get_unique_short_id
-from yacut.error_handlers import InvalidAPIUsage
-
-from settings import MAX_LENGTH_SHORT_URL, REGEX_SHORT_URL, EXISTING_SHORT_LINK
-from urllib.parse import urljoin
 
 ERROR_NOTFOUND_ID = 'Указанный id не найден'
 ERROR_MISSING_FIELDS = 'В запросе отсутствует обязательное поле'
