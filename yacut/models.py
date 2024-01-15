@@ -1,7 +1,8 @@
 from datetime import datetime
 
+from settings import MAX_LENGTH_SHORT_URL, MAX_LENGTH_URL
+
 from yacut import db
-from settings import MAX_LENGTH_URL, MAX_LENGTH_SHORT_URL
 
 
 class URLMap(db.Model):
