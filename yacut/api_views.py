@@ -6,7 +6,7 @@ from urllib.parse import urljoin
 from flask import jsonify, request
 from settings import EXISTING_SHORT_LINK, MAX_LENGTH_SHORT_URL, REGEX_SHORT_URL
 
-from yacut import app, db
+from yacut import app
 from yacut.error_handlers import InvalidAPIUsage
 from yacut.models import URLMap
 from yacut.utils import get_unique_short_id
@@ -24,19 +24,19 @@ def create_short_url() -> Dict[str, Union[str, int]]:
         raise InvalidAPIUsage('"url" является обязательным полем!')
 
     custom_id = data.get('custom_id')
-    if not custom_id or custom_id.strip() == '':
+    if not custom_id or not custom_id.strip():
         custom_id = get_unique_short_id()
     elif URLMap.query.filter_by(short=custom_id).first() is not None:
         raise InvalidAPIUsage(EXISTING_SHORT_LINK)
-    elif re.match(REGEX_SHORT_URL, custom_id) is None \
-            or len(custom_id) > MAX_LENGTH_SHORT_URL:
+    elif (
+        re.match(REGEX_SHORT_URL, custom_id
+                 ) is None or len(custom_id) > MAX_LENGTH_SHORT_URL):
         raise InvalidAPIUsage(
             'Указано недопустимое имя для короткой ссылки')
     new_url = URLMap(
         original=data['url'],
         short=custom_id)
-    db.session.add(new_url)
-    db.session.commit()
+    new_url.add_to_db()
     return (
         jsonify(
             {'url': new_url.original,
