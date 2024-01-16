@@ -7,12 +7,14 @@ from settings import DEFAULT_SHORT_LENGTH, REGEX_SHORT_URL
 from yacut.models import URLMap
 
 
-def generate_short_id(length):
-    chars = string.ascii_letters + string.digits
-    return ''.join(random.choice(chars) for _ in range(length))
+CHARS = string.ascii_letters + string.digits
 
 
-def get_unique_short_id():
+def generate_short_id(length: int) -> str:
+    return ''.join(random.choice(CHARS) for _ in range(length))
+
+
+def get_unique_short_id() -> str:
     while True:
         short_id = generate_short_id(DEFAULT_SHORT_LENGTH)
         if re.match(REGEX_SHORT_URL, short_id
