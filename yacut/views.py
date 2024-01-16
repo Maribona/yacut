@@ -1,7 +1,7 @@
 from flask import Response, flash, redirect, render_template
 from settings import EXISTING_SHORT_LINK
 
-from yacut import app, db
+from yacut import app
 from yacut.forms import UrlForm
 from yacut.models import URLMap
 from yacut.utils import get_unique_short_id
@@ -22,8 +22,7 @@ def main_view() -> Response:
         original=original_link,
         short=short_url
     )
-    db.session.add(new_url)
-    db.session.commit()
+    new_url.add_to_db()
     return render_template(
         'yacut.html',
         form=form,
