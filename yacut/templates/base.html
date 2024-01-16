@@ -12,11 +12,11 @@
   </head>
 
 <body>
+  {% include "header.html" %} 
   <main>
-    {% include "header.html" %} 
     {% block content %}{% endblock content %}
-    {% include "footer.html" %}
   </main>
+  {% include "footer.html" %}
 </body>
 
 <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
